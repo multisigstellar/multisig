@@ -1,0 +1,51 @@
+<div  ng-controller="addSignerController" ng-init="init()">
+<div class="col-md-8 col-md-offset-2">
+  
+  <p>Transaction Created Successfully. See details below</p>
+  <div>
+    <h3>Transaction XDR</h3>
+    <p class="xdr">{{txData.txString}}</p>
+
+    <h3>Transaction Object</h3>
+    <json-formatter json="txEnvelope" open="1"></json-formatter>
+
+  </div>
+
+  
+  
+
+  <p><h1>Notify Expected Signers</h1></p>
+  <p class="help-text">Enter the details of the expected signers for this transaction and save</p>
+  <div class="row">
+      <form ng-submit="saveSigners()" name="signersForm" method="post">
+        <div class="form-group">
+          <div ng-repeat="x in signers track by $index">
+            <legend>Signer {{$index+1}}</legend>
+            <input class="form-control" placeholder="Account ID" type="text" name="acctId" ng-model="x.accountId" required/>
+            <input class="form-control" placeholder="Email Address" type="email" name="email" ng-model="x.email" required/>
+
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-md-6">
+            <a class="btn btn-success btn-block" ng-click="addEntry()">Add more </a>
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <div class="col-md-6">
+            <button class="btn btn-info btn-block"  ng-disabled="signersForm.$error.required || signersForm.$error.$invalid">Save Tx Add Signers</button>
+          </div>
+        </div>
+
+      </form>
+
+
+  </div>
+
+</div>
+
+</div>
+
+
