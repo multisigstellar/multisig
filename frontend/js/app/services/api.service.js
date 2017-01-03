@@ -2,7 +2,7 @@
 
 var api = angular.module('multisigService', []);
 
-var baseUrl = 'http://localhost:8888/';
+var baseUrl = 'http://95.85.23.241:8888/';
 api.factory('Multisig', function($http) {
 
     return {
