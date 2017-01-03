@@ -1,0 +1,34 @@
+<div  ng-controller="homeController" ng-init="init()">
+		<div class="jumbotron">
+        <h1>Stellar Multisig Coordinator</h1>
+        <p>This application allows you to coordinate signing of transactions between multiple parties. </p>
+        <p><span class="badge">1. </span> Create your transaction</p>
+        <p><span class="badge">2. </span> Enter Account ID's of Expected Signers</p>
+        <p><span class="badge">3. </span> Share unique URL </p>
+        <p>
+          <a class="btn btn-lg btn-primary" ui-sref="create" role="button">Create a transaction &raquo;</a>
+        </p>
+    </div>
+
+   <h3 class="text-underline">Recent Transactions</h3>
+	<table class="table table-responsive table-striped">
+		<thead>
+			<tr>
+				<th>Initiator</th>
+				<th>Tag</th>
+				<th>Status</th>
+				<th>Created</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="tx in txList" ng-click="getTx(tx.tx_tag)" class="tx-row">
+				<td class="xdr">{{tx.initiator}}</td>
+				<td>{{tx.tx_tag}}</td>
+				<td><span ng-class="tx.signed == 0 ? 'label label-danger' : 'label label-success'">{{tx.signed == 0 ? 'Signature Pending' : 'Signing Complete'}}</span></td>
+				<td>{{tx.created_at}}</td>
+			</tr>
+		</tbody>
+  
+	</table>
+
+</div>

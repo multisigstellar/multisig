@@ -1,0 +1,74 @@
+<div  ng-controller="txController" ng-init="init()">
+	<h1>Transaction -  {{ txTag}}</h1>
+
+	<div class="row" ng-if="txData.tx_id">
+		<div class="col-md-6">
+			<div class="panel panel-info">
+  
+			  <div class="panel-heading">Transaction Details</div>
+			  <div class="panel-body">
+					<p>
+						<h3>Initiator</h3>
+						<div>{{txObj.initiator}}</div>
+					</p>
+					<p>
+						<h3>Transaction Envelope</h3>
+						<div class="xdr">{{txObj.tx_xdr}}</div>
+					</p>
+					<p>
+						<h4>Transaction URL</h4>
+						 <div>
+						 	<a href="http://localhost/multisig/tx/{{txObj.tx_tag}}">
+						 		http://localhost/multisig/tx/{{txObj.tx_tag}}
+						 	</a>
+						 </div>
+					</p>
+					<p>
+						<h4>Expected Signers</h4>
+						<ul>
+							<li ng-repeat="s in txObj.signers">
+								{{s.email}} - <span ng-class="s.signed == 0 ? 'label label-danger' : 'label label-success'">{{s.signed == 0 ? 'Not Signed' : 'Signed'}}</span>
+							</li>
+						</ul>
+
+					</p>			    
+			  </div>
+
+ 
+			</div>
+
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-info">
+  
+			  <div class="panel-heading">Transaction Object</div>
+			  <div class="panel-body">
+			    <json-formatter json="txEnvelope" open="1"></json-formatter>
+			  </div>
+
+			</div>
+			
+		</div>
+
+	</div>
+
+	<div class="row" ng-if="txData.tx_id">
+		<h3>Signer</h3>
+		<div ng-repeat="x in signersObj track by $index">
+      
+      <input class="form-control" placeholder="Enter your Secret Key" type="text" name="seed" ng-model="x.seed" required/>
+      
+    </div>
+	</div>
+	<div ng-if="txData.tx_id">
+		<div class="col-md-6" ng-hide="txObj.signed">
+      <button class="btn btn-info btn-block" ng-click="signTx()">Sign Transaction</button>
+    </div>
+    <div class="col-md-6" ng-show="txObj.signed">
+      <a class="btn btn-success btn-block" ng-click="submitTx()">Submit Transaction</a>
+    </div>
+	</div>
+	<div ng-if="!txData.tx_id">
+		<h1>No record found</h1>
+	</div>
+</div>

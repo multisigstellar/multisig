@@ -1,0 +1,560 @@
+<div  ng-controller="createController" ng-init="init()">
+<div class="col-md-8 col-md-offset-2">
+  <h1>Create a Transaction</h1>
+  <div class="row">
+      <form  name="txForm">
+        <div class="form-group">
+          <div class="col-md-12">
+            <label>Source Account</label>
+            <input class="form-control" placeholder="Source Account" type="text" name="srcAcct" ng-model="txData.srcAcct" required/>
+            <span style="color:red" ng-show="txData.srcAcct">                  
+              <small ng-hide="isValidKey(txData.srcAcct)">Invalid Account Key</small>
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-md-12">
+            <label>Email</label>
+            <input class="form-control" placeholder="Email Address" type="email" name="email" ng-model="txData.email" required/>
+            <span style="color:red" ng-show="txForm.email.$dirty && txForm.email.$invalid">                  
+              <small ng-show="txForm.email.$error">Invalid Email Address.</small>
+            </span>
+          </div>
+        </div>        
+        
+        <div class="form-group">
+          
+          <div class="col-md-12">
+            <label>Sequence Number</label>
+            <input class="form-control" placeholder="Sequence Number" type="text" name="seqNo" ng-model="txData.seqNo" ng-pattern="regex" required ng-disabled="true"/>
+
+            <a class="btn btn-sm btn-info" ng-click="getSeqNo(txData.srcAcct)">Get sequence number</a>
+            <br>
+            <span style="color:red" ng-show="txForm.seqNo.$dirty && txForm.seqNo.$invalid">                  
+              <small ng-show="txForm.seqNo.$error">Number only.</small>
+            </span>
+
+          </div>
+        </div>
+          <br>
+             
+        <div class="form-group ">
+          
+          <div class="col-md-12">
+            <label>Memo Type</label>
+            <select class="select form-control" ng-model="txData.memoType"  id="memoType" name="memoType">
+             <option value="none">
+              None
+             </option>
+             <option value="text">
+              Text
+             </option>
+             <option value="id">
+              ID
+             </option>
+             <option value="hash">
+              Hash
+             </option>
+             <option value="return">
+              Return Hash
+             </option>
+            </select>
+            <br>
+          </div>
+        </div>
+
+        <div class="form-group" ng-show="showMemo(txData.memoType)">
+          <label>Memo</label>
+          <input class="form-control" placeholder="Enter {{txData.memoType}} memo" type="text" name="memo" ng-model="txData.memo" maxlength="64"/>
+          <span style="color:red" ng-show="txForm.memo.$dirty && txForm.memo.$invalid">
+            <small ng-show="txForm.memo.$error">.</small>
+          </span>
+          
+        </div>
+
+        <hr>
+        <hr>
+
+        <div class="form-group">
+          <div ng-repeat="x in operations track by $index">
+            <legend>Operation {{$index+1}}</legend>
+            <div class="">
+              <div class="">
+                <a class="text-danger" ng-click="removeOperation($index)">Remove Operation</a>
+              </div>
+            </div>
+            <label>Choose Operation Type</label>
+            <select class="select form-control" ng-model="x.operationType"  name="operationType">
+              <option value="-1">
+              Select Operation Type
+              </option>            
+              <option value="0">
+              Create Account
+              </option>
+              <option value="1">
+              Payment
+              </option>
+              <option value="2">
+              Path Payment
+              </option>
+              <option value="3">
+              Manage Offer
+              </option>
+              <option value="4">
+              Create Passive Offer
+              </option>
+              <option value="5">
+              Set Options
+              </option>
+              <option value="6">
+              Change Trust
+              </option>
+              <option value="7">
+              Allow Trust
+              </option>   
+              <option value="8">
+              Account Merge
+              </option>
+              <!-- <option value="9">
+              Inflation
+              </option>
+              <option value="10">
+              Manage Data
+              </option>     -->                                                                                 
+            </select>
+            
+            <!--Create Account-->
+            <div ng-show="showOperation(x.operationType, 0)">
+              <!-- Create Account -->
+              <h3>Create Account</h3>
+              <input class="form-control" placeholder="Destination Account" type="text" name="destAcct" ng-model="x.destAcct" required/>
+              <span style="color:red" ng-show="x.destAcct">                  
+                <small ng-hide="isValidKey(x.destAcct)">Invalid Account Key</small>
+              </span>
+
+              <input class="form-control" placeholder="Starting Balance in XLM" type="number" name="startingBalance" ng-model="x.startingBalance" required/>
+
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct" />
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>
+
+            </div>
+            
+            <!-- Payment-->
+            <div ng-show="showOperation(x.operationType, 1)">
+              <!-- Payment -->
+              <h3>Payment</h3>
+              <input class="form-control" placeholder="Destination Account" type="text" name="destAcct" ng-model="x.destAcct" required/>
+              <span style="color:red" ng-show="x.destAcct">                  
+                <small ng-hide="isValidKey(x.destAcct)">Invalid Account Key</small>
+              </span>              
+
+              <select class="select form-control" ng-model="x.assetType" name="assetType">
+                
+                <option selected="true" value="0">
+                Native
+                </option>
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.assetType)" class="form-control" placeholder="Asset Code" type="text" name="assetCode" ng-model="x.assetCode" required
+              maxlength="{{x.assetType}}"
+              />
+              <br>
+              <input ng-show="showAsset(x.assetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="assetIssuer" ng-model="x.assetIssuer" required/>
+              <span style="color:red" ng-show="x.assetIssuer">                  
+                <small ng-hide="isValidKey(x.assetIssuer)">Invalid Account Key</small>
+              </span>
+
+              <input class="form-control" placeholder="Amount" type="number" name="amount" ng-model="x.amount" required/>
+
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct" />
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>              
+            </div>
+
+            <!-- Payment Path-->
+            <div ng-show="showOperation(x.operationType, 2)">
+              <!-- Payment Path-->
+              <h3>Payment Path</h3>
+              <input class="form-control" placeholder="Destination Account" type="text" name="destAcct" ng-model="x.destAcct" required/>
+              <span style="color:red" ng-show="x.destAcct">                  
+                <small ng-hide="isValidKey(x.destAcct)">Invalid Account Key</small>
+              </span>
+
+              <select class="select form-control" ng-model="x.srcAssetType" name="srcAssetType">
+                
+                <option selected="true" value="0">
+                Native
+                </option>
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.srcAssetType)" class="form-control" placeholder="Asset Code" type="text" name="srcAssetCode" ng-model="x.srcAssetCode" required
+              maxlength="{{x.srcAssetType}}"/>
+              <br>
+              <input ng-show="showAsset(x.srcAssetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="srcAssetIssuer" ng-model="x.srcAssetIssuer" required/>
+              <span style="color:red" ng-show="x.srcAssetIssuer">                  
+                <small ng-hide="isValidKey(x.srcAssetIssuer)">Invalid Account Key</small>
+              </span>
+
+              <input class="form-control" placeholder="Maximum Send Amount" type="number" name="maxAmount" ng-model="x.maxAmount" required/>
+
+              <select class="select form-control" ng-model="x.destAssetType" name="destAssetType">
+                
+                <option selected="true" value="0">
+                Native
+                </option>
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.destAssetType)" class="form-control" placeholder="Asset Code" type="text" name="destAssetCode" ng-model="x.destAssetCode" required maxlength="{{x.destAssetType}}"/>
+              <br>
+              <input ng-show="showAsset(x.destAssetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="destAssetIssuer" ng-model="x.destAssetIssuer" required/>
+              <span style="color:red" ng-show="x.destAssetIssuer">                  
+                <small ng-hide="isValidKey(x.destAssetIssuer)">Invalid Account Key</small>
+              </span>              
+
+              <input class="form-control" placeholder="Destination Amount" type="number" name="destAmount" ng-model="x.destAmount" required/>
+
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct"/>
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>               
+            </div>
+
+            <!--Manage Offer-->
+            <div ng-show="showOperation(x.operationType, 3)">
+              <!--Manage Offer-->
+              <h3>Manage Offer</h3>
+              <input class="form-control" placeholder="Destination Account" type="text" name="destAcct" ng-model="x.destAcct" required/>
+              <span style="color:red" ng-show="x.destAcct">                  
+                <small ng-hide="isValidKey(x.destAcct)">Invalid Account Key</small>
+              </span>
+
+              <label>Selling</label>
+              <select class="select form-control" ng-model="x.sellAssetType" name="sellAssetType">
+                
+                <option selected="true" value="0">
+                Native
+                </option>
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.sellAssetType)" class="form-control" placeholder="Asset Code" type="text" name="sellAssetCode" ng-model="x.sellAssetCode" required
+              maxlength="{{x.sellAssetType}}"/>
+              <br>
+              <input ng-show="showAsset(x.sellAssetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="sellAssetIssuer" ng-model="x.sellAssetIssuer" required/>
+              <span style="color:red" ng-show="x.sellAssetIssuer">                  
+                <small ng-hide="isValidKey(x.sellAssetIssuer)">Invalid Account Key</small>
+              </span>
+
+
+              <label>Buying</label>
+              <select class="select form-control" ng-model="x.buyAssetType" name="buyAssetType">
+                
+                <option selected="true" value="0">
+                Native
+                </option>
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.buyAssetType)" class="form-control" placeholder="Asset Code" type="text" name="buyAssetCode" ng-model="x.buyAssetCode" required
+              maxlength="{{x.buyAssetType}}"/>
+              <br>
+              <input ng-show="showAsset(x.buyAssetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="buyAssetIssuer" ng-model="x.buyAssetIssuer" required/>
+              <span style="color:red" ng-show="x.buyAssetIssuer">                  
+                <small ng-hide="isValidKey(x.buyAssetIssuer)">Invalid Account Key</small>
+              </span>
+
+              <input class="form-control" placeholder="Amount" type="number" name="amount" ng-model="x.amount" required/>
+              <span class="text-muted">An amount of zero will delete the offer.</span>
+
+              <input class="form-control" placeholder="Price" type="number" name="price" ng-model="x.price" required/>
+
+              <input class="form-control" placeholder="Offer ID" type="number" name="offerId" ng-model="x.offerId" required/>
+              <span class="text-muted">zero(0) will create new offer.</span>
+
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct"/>
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>               
+            </div>
+
+
+            <!--Create Passive Offer-->
+            <div ng-show="showOperation(x.operationType, 4)">
+              <!--Create Passive Offer-->
+              <h3>Create Passive Offer</h3>
+              <input class="form-control" placeholder="Destination Account" type="text" name="destAcct" ng-model="x.destAcct" required/>
+              <span style="color:red" ng-show="x.destAcct">                  
+                <small ng-hide="isValidKey(x.destAcct)">Invalid Account Key</small>
+              </span>
+
+              <label>Selling</label>
+              <select class="select form-control" ng-model="x.sellAssetType" name="sellAssetType">
+                
+                <option selected="true" value="0">
+                Native
+                </option>
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.sellAssetType)" class="form-control" placeholder="Asset Code" type="text" name="sellAssetCode" ng-model="x.sellAssetCode" required
+              maxlength="{{x.sellAssetType}}"/>
+              <br>
+              <input ng-show="showAsset(x.sellAssetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="sellAssetIssuer" ng-model="x.sellAssetIssuer" required/>
+              <span style="color:red" ng-show="x.sellAssetIssuer">                  
+                <small ng-hide="isValidKey(x.sellAssetIssuer)">Invalid Account Key</small>
+              </span>
+
+
+              <label>Buying</label>
+              <select class="select form-control" ng-model="x.buyAssetType" name="buyAssetType">
+                
+                <option selected="true" value="0">
+                Native
+                </option>
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.buyAssetType)" class="form-control" placeholder="Asset Code" type="text" name="buyAssetCode" ng-model="x.buyAssetCode" required
+              maxlength="{{x.buyAssetType}}"/>
+              <br>
+              <input ng-show="showAsset(x.buyAssetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="buyAssetIssuer" ng-model="x.buyAssetIssuer" required/>
+              <span style="color:red" ng-show="x.buyAssetIssuer">                  
+                <small ng-hide="isValidKey(x.buyAssetIssuer)">Invalid Account Key</small>
+              </span>
+
+              <input class="form-control" placeholder="Amount" type="number" name="amount" ng-model="x.amount" required/>
+              <span class="text-muted">An amount of zero will delete the offer.</span>
+
+              <input class="form-control" placeholder="Price" type="number" name="price" ng-model="x.price" required/>
+
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct"/>
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>               
+            </div>
+
+            <!--Set Options-->
+            <div ng-show="showOperation(x.operationType, 5)">
+              <!--Set Options-->
+              <h3>Set Options</h3>
+              <input class="form-control" placeholder="Inflation Destination Account (Optional)" type="text" name="inflationDestAcct" ng-model="x.inflationDestAcct" required/>
+              <span style="color:red" ng-show="x.inflationDestAcct">                  
+                <small ng-hide="isValidKey(x.inflationDestAcct)">Invalid Account Key</small>
+              </span>
+
+              <label>Set Flags(Optional)</label>
+              
+              <div class="form-group">
+                  <label class="checkbox-inline">
+                      <input type="checkbox" name="setFlags" ng-model="x.setFlags.authReq" ng-true-value="1" ng-false-value="0">Authorization Required
+                  </label>
+                  <label class="checkbox-inline">
+                      <input type="checkbox" name="setFlags" ng-model="x.setFlags.authRev" ng-true-value="2" ng-false-value="0">Authorization Revocable
+                  </label>
+                  <label class="checkbox-inline">
+                      <input type="checkbox" name="setFlags" ng-model="x.setFlags.authIm" ng-true-value="4" ng-false-value="0">Authorization Immutable
+                  </label>
+
+              </div>
+
+              <label>Clear Flags(Optional)</label>
+              
+              <div class="form-group">
+                  <label class="checkbox-inline">
+                      <input type="checkbox" name="clearFlags" ng-model="x.clearFlags.authReq" ng-true-value="1" ng-false-value="0">Authorization Required
+                  </label>
+                  <label class="checkbox-inline">
+                      <input type="checkbox" name="clearFlags" ng-model="x.clearFlags.authRev" ng-true-value="2" ng-false-value="0">Authorization Revocable
+                  </label>
+                  <label class="checkbox-inline">
+                      <input type="checkbox" name="clearFlags" ng-model="x.clearFlags.authIm" ng-true-value="4" ng-false-value="0">Authorization Immutable
+                  </label>
+              </div>              
+
+              <input class="form-control" placeholder="Master Weigth (Optional): 0 - 255" type="number" name="masterWeight" ng-model="x.masterWeight"
+              max="255"/>
+              <span style="color:red" ng-show="{{x.masterWeight > 255}}">                  
+                <small>Maximum value is 255</small>
+              </span>
+
+              <input class="form-control" placeholder="Low Threshold (Optional): 0 - 255" type="number" name="lowThreshold" ng-model="x.lowThreshold"
+              max="255"/>
+              <span style="color:red" ng-show="{{x.lowThreshold > 255}}">                  
+                <small>Maximum value is 255</small>
+              </span>
+
+              <input class="form-control" placeholder="Medium Threshold (Optional): 0 - 255" type="number" name="medThreshold" ng-model="x.medThreshold"
+              max="255"/>
+              <span style="color:red" ng-show="{{x.medThreshold > 255}}">                  
+                <small>Maximum value is 255</small>
+              </span>
+
+              <input class="form-control" placeholder="High Threshold (Optional): 0 - 255" type="number" name="highThreshold" ng-model="x.highThreshold"
+              max="255"/>
+              <span style="color:red" ng-show="{{x.highThreshold > 255}}">                  
+                <small>Maximum value is 255</small>
+              </span>
+
+              <input class="form-control" placeholder="Signer Public Key (Optional)" type="text" name="signerId" ng-model="x.signerId"/>
+              <span style="color:red" ng-show="x.signerId">                  
+                <small ng-hide="isValidKey(x.signerId)">Invalid Account Key</small>
+              </span>
+
+              <input class="form-control" placeholder="Signer Weigth (Optional): 0 - 255" type="number" name="signerWeight" ng-model="x.signerWeight"
+              max="255"/>
+              <span style="color:red" ng-show="{{x.signerWeight > 255}}">                  
+                <small>Maximum value is 255</small>
+              </span>
+
+              <input class="form-control" placeholder="Home Domain(Optional): e.g: example.com" type="text" name="homeDomain" ng-model="x.homeDomain"/>
+            
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct"/>
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>               
+            </div>
+
+            <!--Change Trust-->
+            <div ng-show="showOperation(x.operationType, 6)">
+              <!--Change Trust-->
+              <h3>Change Trust</h3>
+              
+              <label>Asset</label>
+              <select class="select form-control" ng-model="x.assetType" name="assetType">
+                <option value="4">
+                Alphanumeric 4
+                </option>
+                <option value="12">
+                Alphanumeric 12
+                </option>
+              </select>
+              <br>
+              <input ng-show="showAsset(x.assetType)" class="form-control" placeholder="Asset Code" type="text" name="assetCode" ng-model="x.assetCode" required
+              maxlength="{{x.assetType}}"
+              />
+              <br>
+              <input ng-show="showAsset(x.assetType)" class="form-control" placeholder="Asset Issuer ID" type="text" name="assetIssuer" ng-model="x.assetIssuer" required/>
+              <span style="color:red" ng-show="x.assetIssuer">                  
+                <small ng-hide="isValidKey(x.assetIssuer)">Invalid Account Key</small>
+              </span>
+
+              <input class="form-control" placeholder="Trust Limit (Optional)" type="number" name="limit" ng-model="x.limit"/>
+              <span class="text-muted">Leave empty to default to the max int64. Set to 0 to remove the trust line.</span>
+
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct" />
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>              
+            </div>    
+
+            <!--Allow Trust-->
+            <div ng-show="showOperation(x.operationType, 7)">
+              <!--Allow Trust-->
+              <h3>Allow Trust</h3>
+              <input class="form-control" placeholder="Trustor" type="text" name="trustor" ng-model="x.trustor" required/>
+              <span style="color:red" ng-show="x.trustor">                  
+                <small ng-hide="isValidKey(x.trustor)">Invalid Account Key</small>
+              </span>               
+              
+
+              <input class="form-control" placeholder="Asset Code" type="text" name="assetCode" ng-model="x.assetCode" required maxlength="12" />
+
+              <label>Authorize</label>
+              <select class="select form-control" ng-model="x.authorize" name="authorize">
+                <option value="true">
+                True
+                </option>
+                <option value="false">
+                False
+                </option>
+              </select>
+              
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct" />
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>              
+            </div>
+
+
+            <!--Account Merge-->
+            <div ng-show="showOperation(x.operationType, 8)">
+              <!--Account Merge-->
+              <h3>Account Merge</h3>
+              <input class="form-control" placeholder="Destination Account" type="text" name="destAcct" ng-model="x.destAcct" required/>
+              <span style="color:red" ng-show="x.destAcct">                  
+                <small ng-hide="isValidKey(x.destAcct)">Invalid Account Key</small>
+              </span>              
+              
+              <input class="form-control" placeholder="Source Account(optional)" type="text" name="srcAcct" ng-model="x.srcAcct" />
+              <span style="color:red" ng-show="x.srcAcct">                  
+                <small ng-hide="isValidKey(x.srcAcct)">Invalid Account Key</small>
+              </span>              
+            </div>
+
+
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-md-6">
+            <a class="btn btn-success btn-block" ng-click="addOperation()">Add Operation</a>
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <div class="col-md-6">
+            <input type="submit" ng-click="buildTx()" class="btn btn-info btn-block" value="Create Transaction"/>
+          </div>
+        </div>
+
+      </form>
+
+
+  </div>
+
+</div>
+
+</div>
+
+
