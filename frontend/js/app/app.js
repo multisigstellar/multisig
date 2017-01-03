@@ -20,7 +20,7 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
       views:{
           
         'pgContainer' : {
-          templateUrl: 'js/app/tx/home.controller.html',
+          templateUrl: 'frontend/js/app/tx/home.controller.html',
           controller: 'homeController'
         },
             
@@ -34,7 +34,7 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
       views:{
           
         'pgContainer' : {
-          templateUrl: 'js/app/tx/create.controller.html',
+          templateUrl: 'frontend/js/app/tx/create.controller.html',
       	  controller: 'createController'
       	},
       			
@@ -53,7 +53,7 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
       },
       views: {
         'pgContainer': {
-          templateUrl: 'js/app/signers/addsigner.controller.html',
+          templateUrl: 'frontend/js/app/signers/addsigner.controller.html',
           controller: 'addSignerController'
         }
       },
@@ -65,7 +65,7 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
       url: '/tx/:tx_tag',
       views: {
         'pgContainer': {
-          templateUrl: 'js/app/tx/tx.controller.html',
+          templateUrl: 'frontend/js/app/tx/tx.controller.html',
           controller: 'txController'
         }
       },
@@ -77,7 +77,7 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
       url: '/sign/:tx_tag',
       views: {
         'pgContainer': {
-          templateUrl: 'js/app/tx/sign.controller.html',
+          templateUrl: 'frontend/js/app/tx/sign.controller.html',
           controller: 'signController'
         }
       },
@@ -94,7 +94,7 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
 app.run(function ($rootScope, $state ) {
   $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
 
-    $rootScope.siteURL = 'http://localhost/';
+    $rootScope.siteURL = 'https://multisigstellar.github.io/multisig/';
     
   });
 
