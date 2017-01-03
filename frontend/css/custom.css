@@ -1,0 +1,18 @@
+body {
+  min-height: 2000px;
+  padding-top: 70px;
+}
+.xdr{
+	word-wrap:break-word;
+}
+.tx-row{
+	cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6{
+	color: #3a93f4;
+}
+
+.form-control{
+	margin-bottom: 10px;
+}
