@@ -13,6 +13,7 @@ multisig.controller('txController', function($scope, $state, $stateParams, $http
 	$scope.srcAcct = "";
 	$scope.responseData = {};
 	$scope.signersObj = [{'operationCount' : 1}];
+	$scope.searchStatus = 'Searching...';
 
 	$scope.init = function() {
 		console.log("sP", $stateParams);
@@ -28,6 +29,7 @@ multisig.controller('txController', function($scope, $state, $stateParams, $http
 			})
 			.error(function(data) {
 				console.log(data);
+				$scope.searchStatus = 'No record found';
 			});
 
 	};
