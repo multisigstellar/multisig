@@ -24,9 +24,6 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
           controller: 'homeController'
         },
             
-      },
-      data: {
-        requireLogin: false
       }
     })
 		.state('create', {
@@ -38,9 +35,6 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
       	  controller: 'createController'
       	},
       			
-      },
-      data: {
-        requireLogin: false
       }
 		})
     .state('addsigners',{
@@ -56,9 +50,6 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
           templateUrl: 'frontend/js/app/signers/addsigner.controller.html',
           controller: 'addSignerController'
         }
-      },
-      data:{
-        requireLogin: false
       }
     })    
     .state('tx',{
@@ -68,9 +59,6 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
           templateUrl: 'frontend/js/app/tx/tx.controller.html',
           controller: 'txController'
         }
-      },
-      data:{
-        requireLogin: false
       }
     })
     .state('sign',{
@@ -80,9 +68,6 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider, $http
           templateUrl: 'frontend/js/app/tx/sign.controller.html',
           controller: 'signController'
         }
-      },
-      data:{
-        requireLogin: false
       }
     });
 
