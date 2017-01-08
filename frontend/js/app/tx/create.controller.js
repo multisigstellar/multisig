@@ -1,7 +1,7 @@
 var multisig = angular.module('multisig');
 var testNetwork = "https://horizon-testnet.stellar.org";
 var liveNetwork = "https://horizon.stellar.org";
-StellarSdK.Network.usePublicNetwork();
+StellarSdk.Network.usePublicNetwork();
 var server = new StellarSdk.Server(liveNetwork);
 
 multisig.controller('createController', function($scope, $state, $http, $rootScope, Multisig, randomString) {
